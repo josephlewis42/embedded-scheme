@@ -17,8 +17,10 @@ The goal of Scheme is to build a small, well documented, and compliant version o
 
 Embedded Scheme is open source, but closed to code contributions.
 
-
-
 ## License
 
 Licensed under the MIT license, see LICENSE for the full text.
+
+## Disclaimer
+
+This is not an officially supported Google product.
