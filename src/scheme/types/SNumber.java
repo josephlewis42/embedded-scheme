@@ -31,8 +31,7 @@ public class SNumber extends SValue implements Comparable<SNumber> {
 
 	public static final SNumber ZERO = of(BigDecimal.ZERO);
 	public static final SNumber ONE = of(BigDecimal.ONE);
-	public static final SNumber TWO = of(BigInteger.TWO);
-	
+
 	// This is an oversimplification of types and won't
 	// properly represent all values that Scheme supports
 	// specifically complex numbers;
