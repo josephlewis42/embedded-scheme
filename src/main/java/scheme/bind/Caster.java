@@ -17,25 +17,25 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme.bind;
+package scheme.bind;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.Function;
 
-import main.java.scheme.types.SBoolean;
-import main.java.scheme.types.SCharacter;
-import main.java.scheme.types.SInputPort;
-import main.java.scheme.types.SNull;
-import main.java.scheme.types.SNumber;
-import main.java.scheme.types.SOutputPort;
-import main.java.scheme.types.SPair;
-import main.java.scheme.types.SPort;
-import main.java.scheme.types.SProcedure;
-import main.java.scheme.types.SString;
-import main.java.scheme.types.SSymbol;
-import main.java.scheme.types.SValue;
-import main.java.scheme.types.SVector;
+import scheme.types.SBoolean;
+import scheme.types.SCharacter;
+import scheme.types.SInputPort;
+import scheme.types.SNull;
+import scheme.types.SNumber;
+import scheme.types.SOutputPort;
+import scheme.types.SPair;
+import scheme.types.SPort;
+import scheme.types.SProcedure;
+import scheme.types.SString;
+import scheme.types.SSymbol;
+import scheme.types.SValue;
+import scheme.types.SVector;
 
 /**
  * Converts values between Java and Scheme types.

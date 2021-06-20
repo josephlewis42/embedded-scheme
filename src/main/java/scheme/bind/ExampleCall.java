@@ -20,7 +20,7 @@
 /**
  * 
  */
-package main.java.scheme.bind;
+package scheme.bind;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -41,4 +41,5 @@ public @interface ExampleCall {
 	String in();
 	String out() default "";
 	boolean error() default false;
+	boolean deterministic() default true;
 }

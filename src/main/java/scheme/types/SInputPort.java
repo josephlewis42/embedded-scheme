@@ -17,9 +17,45 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme.types;
+package scheme.types;
 
-public class SInputPort {
+import scheme.Environment;
+import scheme.EvaluationException;
+import scheme.Scheme;
+import scheme.bind.Init;
+import scheme.bind.Procedure;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
+
+public class SInputPort extends SPort{
+
+	private static final SSymbol CURRENT_INPUT_PORT = SSymbol.unique("in");
+
+	private final InputStream in;
+
+	private SInputPort(final InputStream out) {
+		this.in = Objects.requireNonNull(out);
+	}
+
+	public static SInputPort of(final InputStream in) {
+		return new SInputPort(in);
+	}
+
+	@Init
+	public static void init(Scheme scm) {
+		setCurrentInputPort(scm.getEnv(), of(scm.getIn()));
+	}
+
+	@Procedure(name = "current-input-port")
+	public static SInputPort getCurrentInputPort(Environment env) {
+		return env.lookupSymbol(CURRENT_INPUT_PORT).getPort().getInputPort();
+	}
+
+	public static void setCurrentInputPort(Environment env, SInputPort port) {
+		env.define(CURRENT_INPUT_PORT, port);
+	}
 
 	public boolean isInputPort() {
 		return true;
@@ -28,8 +64,18 @@ public class SInputPort {
 	public SInputPort getInputPort() {
 		return this;
 	}
-	
-	public String toString() {
-		return "#[output-port]";
+
+	@Override
+	public void close() {
+		try {
+			in.close();
+		} catch (IOException e) {
+			throw new EvaluationException(e);
+		}
+	}
+
+	@Override
+	public String toScheme() {
+		return "#[input-port]";
 	}
 }

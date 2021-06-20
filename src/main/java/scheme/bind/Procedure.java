@@ -17,7 +17,7 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme.bind;
+package scheme.bind;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * 
  * <p>
  * Java methods are allowed to receive and return any of the concrete types that
- * implement {@link main.java.scheme.types.SValue} or their Java native values that can be
+ * implement {@link scheme.types.SValue} or their Java native values that can be
  * mapped using {@link Caster.toValue} and {@link Caster.fromValue}.
  */
 @Retention(RetentionPolicy.RUNTIME)

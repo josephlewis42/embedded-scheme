@@ -17,7 +17,7 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme;
+package scheme;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,13 +28,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 
-import main.java.scheme.bind.ExampleCall;
-import main.java.scheme.bind.Procedure;
-import main.java.scheme.bind.Schemeify;
-import main.java.scheme.types.SNull;
-import main.java.scheme.types.SOutputPort;
-import main.java.scheme.types.SValue;
-import main.java.scheme.vm.VM;
+import scheme.bind.ExampleCall;
+import scheme.bind.Procedure;
+import scheme.bind.Schemeify;
+import scheme.types.SInputPort;
+import scheme.types.SNull;
+import scheme.types.SOutputPort;
+import scheme.types.SValue;
+import scheme.vm.VM;
 
 /**
  * An instance of the Scheme execution environment.
@@ -59,9 +60,24 @@ public class Scheme {
 
 		Schemeify.register(new Builtins(), this);
 		Schemeify.register(this, this);
-		Schemeify.register(SOutputPort.systemOut(), this);
+		Schemeify.register(SOutputPort.of(out), this);
+		Schemeify.register(SInputPort.of(in), this);
+
 	}
-	
+
+	public static Scheme headless() {
+		return new Scheme(new InputStream() {
+			@Override
+			public int read() {
+				return -1;  // end of stream
+			}
+		}, new OutputStream() {
+			@Override
+			public void write(int b) throws IOException {
+				// no-op
+			}
+		});
+	}
 
 	public InputStream getIn() {
 		return in;
@@ -77,7 +93,8 @@ public class Scheme {
 	
 	
 	/** Evaluates a string as a Scheme expression. **/
-	public void loadString(String s) {
+	public Optional<SValue> loadString(String s) {
+		Optional<SValue> result  = Optional.empty();
 		try(var reader = new Scanner(s)){
 			var p = new Parser(reader);
 
@@ -86,9 +103,10 @@ public class Scheme {
 				if(expr == SNull.EOF) {
 					break;
 				}
-				Scheme.eval(env, expr);
+				result = Optional.ofNullable(Scheme.eval(env, expr));
 			}
 		}
+		return result;
 	}
 	
 	/** Evaluates the contents of a file as a Scheme expression. **/

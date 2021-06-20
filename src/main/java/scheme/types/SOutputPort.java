@@ -17,17 +17,17 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme.types;
+package scheme.types;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import main.java.scheme.Environment;
-import main.java.scheme.EvaluationException;
-import main.java.scheme.Scheme;
-import main.java.scheme.bind.Init;
-import main.java.scheme.bind.Procedure;
+import scheme.Environment;
+import scheme.EvaluationException;
+import scheme.Scheme;
+import scheme.bind.Init;
+import scheme.bind.Procedure;
 
 public class SOutputPort extends SPort {
 
@@ -40,8 +40,8 @@ public class SOutputPort extends SPort {
 		this.out = out;
 	}
 
-	public static final SOutputPort systemOut() {
-		return new SOutputPort(System.out);
+	public static SOutputPort of(final OutputStream out) {
+		return new SOutputPort(out);
 	}
 
 	public boolean isOutputPort() {
@@ -54,7 +54,7 @@ public class SOutputPort extends SPort {
 
 	@Init
 	public static void init(Scheme scm) {
-		setCurrentOutputPort(scm.getEnv(), systemOut());
+		setCurrentOutputPort(scm.getEnv(), new SOutputPort(scm.getOut()));
 	}
 
 	@Procedure(name = "current-output-port")

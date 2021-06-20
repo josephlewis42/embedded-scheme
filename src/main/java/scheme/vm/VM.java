@@ -17,7 +17,7 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme.vm;
+package scheme.vm;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -27,16 +27,16 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
 
-import main.java.scheme.Environment;
-import main.java.scheme.EvaluationException;
-import main.java.scheme.Promise;
-import main.java.scheme.types.SBoolean;
-import main.java.scheme.types.SClosure;
-import main.java.scheme.types.SNull;
-import main.java.scheme.types.SPair;
-import main.java.scheme.types.SProcedure;
-import main.java.scheme.types.SSymbol;
-import main.java.scheme.types.SValue;
+import scheme.Environment;
+import scheme.EvaluationException;
+import scheme.Promise;
+import scheme.types.SBoolean;
+import scheme.types.SClosure;
+import scheme.types.SNull;
+import scheme.types.SPair;
+import scheme.types.SProcedure;
+import scheme.types.SSymbol;
+import scheme.types.SValue;
 
 /**
  * Implements a stack based VM for Scheme that supports evaluating keywords.
@@ -168,7 +168,7 @@ public class VM {
 			 * (if test consequent alternate?) evaluates test, if truthy returns the
 			 * evaluated consequent, else returns the evaluated alternate.
 			 * 
-			 * This implementation of main.java.scheme returns the null if no alternate is provided,
+			 * This implementation of scheme returns the null if no alternate is provided,
 			 * although the behavior is unspecified in R5RS.
 			 */
 
@@ -205,7 +205,7 @@ public class VM {
 			 * (set! var expr) evaluates expr and assigns the value to the location which
 			 * var is already bound.
 			 * 
-			 * This implementation of main.java.scheme returns the previously bound value, although
+			 * This implementation of scheme returns the previously bound value, although
 			 * the behavior is unspecified in R5RS.
 			 * 
 			 * OP_SET is the entrypoint. OP_SET_TERM is the termination state, it receives

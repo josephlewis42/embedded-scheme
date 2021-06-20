@@ -17,15 +17,15 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme.types;
+package scheme.types;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import main.java.scheme.Environment;
-import main.java.scheme.EvaluationException;
-import main.java.scheme.vm.VM;
+import scheme.Environment;
+import scheme.EvaluationException;
+import scheme.vm.VM;
 
 public class SClosure extends SProcedure {
 		

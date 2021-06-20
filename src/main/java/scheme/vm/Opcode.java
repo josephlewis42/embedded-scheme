@@ -17,13 +17,13 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme.vm;
+package scheme.vm;
 
 import java.util.Objects;
 import java.util.Optional;
 
-import main.java.scheme.EvaluationException;
-import main.java.scheme.types.SSymbol;
+import scheme.EvaluationException;
+import scheme.types.SSymbol;
 
 public enum Opcode {
 	OP_RETURN("", 0, 0, false),

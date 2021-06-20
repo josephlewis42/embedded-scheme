@@ -17,21 +17,21 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme;
+package scheme;
 
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Scanner;
 
-import main.java.scheme.types.SBoolean;
-import main.java.scheme.types.SCharacter;
-import main.java.scheme.types.SNull;
-import main.java.scheme.types.SNumber;
-import main.java.scheme.types.SPair;
-import main.java.scheme.types.SString;
-import main.java.scheme.types.SSymbol;
-import main.java.scheme.types.SValue;
-import main.java.scheme.types.SVector;
+import scheme.types.SBoolean;
+import scheme.types.SCharacter;
+import scheme.types.SNull;
+import scheme.types.SNumber;
+import scheme.types.SPair;
+import scheme.types.SString;
+import scheme.types.SSymbol;
+import scheme.types.SValue;
+import scheme.types.SVector;
 
 /**
  * Parser contains the main parser for the Scheme implementation capable of

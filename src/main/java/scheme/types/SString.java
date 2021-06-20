@@ -17,17 +17,18 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme.types;
+package scheme.types;
 
 import java.nio.CharBuffer;
+import java.util.Arrays;
 
-import main.java.scheme.EvaluationException;
+import scheme.EvaluationException;
 
 public class SString extends SValue implements Comparable<SString>, CharSequence {
-	private CharBuffer internal;
+	private char[] internal;
 
 	public SString(CharSequence sequence) {
-		this.internal = CharBuffer.wrap(sequence);
+		this.internal = sequence.toString().toCharArray();
 	}
 
 	public static SString ofSize(int size) {
@@ -43,7 +44,7 @@ public class SString extends SValue implements Comparable<SString>, CharSequence
 	}
 
 	public int length() {
-		return internal.length();
+		return internal.length;
 	}
 
 	public char ref(int index) throws EvaluationException {
@@ -55,48 +56,49 @@ public class SString extends SValue implements Comparable<SString>, CharSequence
 		assertMutable();
 		assertInRange(index);
 
-		internal.put(index, val);
+		internal[index] = val;
 	}
 	
 	public void fill(char val) throws EvaluationException {
 		assertMutable();
         for(int i = 0; i < length(); i++) {
-        	internal.put(i, val);
+        	internal[i] = val;
         }
 	}
 
 	public String javaString() {
-		return internal.toString();
+		return String.valueOf(internal);
 	}
 
 	public String toString() {
-		return internal.toString();
+		return javaString();
 	}
 
 	private void assertInRange(int index) throws EvaluationException {
-		if (index < 0 || index >= internal.length()) {
+		if (index < 0 || index >= internal.length) {
 			throw EvaluationException.format("index %d is out of bounds for string of length %d", index,
-					internal.length());
+					internal.length);
 		}
 	}
 
 	@Override
 	public int compareTo(SString o) {
-		return internal.compareTo(o.internal);
+		return Arrays.compare(internal, o.internal);
 	}
 
 	public int compareToCaseInsensitive(SString o) {
-		return internal.toString().compareToIgnoreCase(o.toString());
+		return javaString().compareToIgnoreCase(o.javaString());
 	}
 
 	@Override
 	public char charAt(int index) {
-		return internal.charAt(index);
+		assertInRange(index);
+		return internal[index];
 	}
 
 	@Override
 	public CharSequence subSequence(int start, int end) {
-		return internal.subSequence(start, end);
+		return String.valueOf(internal).subSequence(start, end);
 	}
 	
 	@Override
@@ -112,6 +114,6 @@ public class SString extends SValue implements Comparable<SString>, CharSequence
 	@Override
 	public String toScheme() {
 		// TODO: escape this value
-		return String.format("\"%s\"", internal.toString());
+		return String.format("\"%s\"", String.valueOf(internal));
 	}
 }

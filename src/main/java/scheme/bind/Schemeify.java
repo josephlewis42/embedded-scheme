@@ -17,14 +17,14 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme.bind;
+package scheme.bind;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
 
-import main.java.scheme.Scheme;
-import main.java.scheme.types.SSymbol;
+import scheme.Scheme;
+import scheme.types.SSymbol;
 
 /** Utilities to bind Java methods as Scheme functions via annotation. */
 public class Schemeify {

@@ -17,10 +17,10 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme;
+package scheme;
 
-import main.java.scheme.types.SProcedure;
-import main.java.scheme.types.SValue;
+import scheme.types.SProcedure;
+import scheme.types.SValue;
 
 /**
  * Promise is a lazily evaluated procedure. Once evaluated via

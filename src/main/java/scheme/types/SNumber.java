@@ -17,7 +17,7 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main.java.scheme.types;
+package scheme.types;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -25,7 +25,7 @@ import java.math.MathContext;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import main.java.scheme.EvaluationException;
+import scheme.EvaluationException;
 
 public class SNumber extends SValue implements Comparable<SNumber> {
 
@@ -154,11 +154,20 @@ public class SNumber extends SValue implements Comparable<SNumber> {
 	}
 	
 	public SNumber modulo(SNumber other) throws EvaluationException {
-		return catchInexact(() -> {
-			var lhs = internal.toBigIntegerExact();
-			var rhs = other.internal.toBigIntegerExact();
-			return SNumber.of(lhs.mod(rhs));
-		});
+		SNumber res = remainder(other);
+		if (other.compareTo(SNumber.ZERO) < 0){
+			if (res.compareTo(SNumber.ZERO) <= 0){
+				return res;
+			} else {
+				return res.add(other);
+			}
+		} else {
+			if (res.compareTo(SNumber.ZERO) >= 0){
+				return res;
+			} else {
+				return res.add(other);
+			}
+		}
 	}
 
 	public static SNumber parse(String data, int base) throws EvaluationException {
