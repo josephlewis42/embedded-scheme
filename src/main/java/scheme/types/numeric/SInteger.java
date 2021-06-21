@@ -20,6 +20,7 @@
 package scheme.types.numeric;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class SInteger implements Number<SInteger>, SRationalPromotable, SRealPromotable {
@@ -28,9 +29,11 @@ public class SInteger implements Number<SInteger>, SRationalPromotable, SRealPro
 	public static final SInteger ZERO = new SInteger(BigInteger.ZERO);
 
 	private final BigInteger value;
+	private final boolean exact;
 
 	private SInteger(final BigInteger value) {
 		this.value = Objects.requireNonNull(value, "value");
+		exact = true;
 	}
 
 	public static SInteger of(final BigInteger value) {
@@ -78,10 +81,6 @@ public class SInteger implements Number<SInteger>, SRationalPromotable, SRealPro
 		return of(value.subtract(other.value));
 	}
 
-	public SInteger modulo(SInteger other) {
-		return of(value.mod(other.value));
-	}
-
 	public SInteger remainder(SInteger other) {
 		return of(value.remainder(other.value));
 	}
@@ -102,6 +101,12 @@ public class SInteger implements Number<SInteger>, SRationalPromotable, SRealPro
 		return value.signum();
 	}
 
+	public SInteger[] divideAndRemainder(SInteger other) {
+		return Arrays.stream(value.divideAndRemainder(other.value))
+				.map(SInteger::of)
+				.toArray(SInteger[]::new);
+	}
+
 	public SRational reciprocal() {
 		return SRational.of(ONE, this);
 	}
@@ -116,5 +121,27 @@ public class SInteger implements Number<SInteger>, SRationalPromotable, SRealPro
 
 	public int compareTo(SInteger other) {
 		return value.compareTo(other.value);
+	}
+
+	@Override
+	public SInteger[] divideToIntegralValue(SInteger divisor) {
+			BigInteger[] res = this.value.divideAndRemainder(divisor.value);
+
+			return new SInteger[]{of(res[0]), of(res[1])};
+	}
+
+	@Override
+	public String displayValue() {
+		return value.toString();
+	}
+
+	@Override
+	public SInteger integerValueExact() throws InexactException {
+		return this;
+	}
+
+	@Override
+	public boolean isExact() {
+		return exact;
 	}
 }

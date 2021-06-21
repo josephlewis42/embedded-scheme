@@ -21,71 +21,41 @@ package scheme.types;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import scheme.EvaluationException;
+import scheme.types.numeric.*;
+import scheme.types.numeric.Number;
 
 public class SNumber extends SValue implements Comparable<SNumber> {
 
-	public static final SNumber ZERO = of(BigDecimal.ZERO);
-	public static final SNumber ONE = of(BigDecimal.ONE);
+	public static final SNumber ZERO = of(SInteger.ZERO);
+	public static final SNumber ONE = of(SInteger.ONE);
 
-	// This is an oversimplification of types and won't
-	// properly represent all values that Scheme supports
-	// specifically complex numbers;
-	private final BigDecimal internal;
+	private final Number<?> wrapped;
 
-	public SNumber(final BigDecimal internal) {
-		Objects.requireNonNull(internal);
+	public SNumber(final Number<?> wrapped) {
+		this.wrapped = Objects.requireNonNull(wrapped);
+	}
 
-		this.internal = internal;
+	public static SNumber of(final Number<?> value) {
+		return new SNumber(value);
 	}
 
 	public static SNumber of(final BigDecimal val) {
-		return new SNumber(val);
+		return new SNumber(SReal.of(val));
 	}
 
 	public static SNumber of(final long num) {
-		return new SNumber(BigDecimal.valueOf(num));
+		return of(BigInteger.valueOf(num));
 	}
 
 	public static SNumber of(final double num) {
-		return new SNumber(BigDecimal.valueOf(num));
+		return of(BigDecimal.valueOf(num));
 	}
 	
 	public static SNumber of(BigInteger obj) {
-		return new SNumber(new BigDecimal(obj));
-	}
-
-
-	public BigInteger toBigInteger() throws EvaluationException {
-		return catchInexact(internal::toBigIntegerExact);
-	}
-	
-	public BigDecimal toBigDecimal() throws EvaluationException {
-		return internal;
-	}
-	
-	public double toDouble() throws EvaluationException {
-		return catchInexact(internal::doubleValue);
-	}
-	
-	public int toInteger() throws EvaluationException {
-		return catchInexact(toBigInteger()::intValueExact);
-	}
-	
-	public long toLong() throws EvaluationException {
-		return catchInexact(toBigInteger()::longValueExact);
-	}
-
-	private <T> T catchInexact(Supplier<T> supplier)throws EvaluationException {
-		try {
-			return supplier.get();
-		} catch(ArithmeticException e) {
-			throw new EvaluationException("number can't be converted exactly");
-		}
+		return new SNumber(SInteger.of(obj));
 	}
 
 	public boolean isComplex() {
@@ -101,90 +71,75 @@ public class SNumber extends SValue implements Comparable<SNumber> {
 	}
 
 	public boolean isInteger() {
-		// https://stackoverflow.com/a/12748321
-		return internal.stripTrailingZeros().scale() <= 0;
+		return wrapped.isInteger();
 	}
-	
+
 	public boolean isExact() {
-		return isInteger();
+		return Numbers.isExact(wrapped);
 	}
-		
-	public SNumber sqrt() throws EvaluationException {
-		try {
-			return new SNumber(internal.sqrt(MathContext.DECIMAL64));
-		} catch(ArithmeticException e) {
-			throw new EvaluationException(e);
-		}
-	}
-	
+
 	public SNumber add(SNumber other) {
-		return new SNumber(this.internal.add(other.internal));
+		return of(Numbers.add(wrapped, other.wrapped));
 	}
 	
 	public SNumber subtract(SNumber other) {
-		return new SNumber(this.internal.subtract(other.internal));
+		return of(Numbers.subtract(wrapped, other.wrapped));
 	}
 	
 	public SNumber multiply(SNumber other) {
-		return new SNumber(this.internal.multiply(other.internal));
+		return of(Numbers.multiply(wrapped, other.wrapped));
 	}
 	
 	public SNumber divide(SNumber other) throws EvaluationException {
 		try {
-			return new SNumber(this.internal.divide(other.internal, MathContext.DECIMAL64));
+			return of(Numbers.divide(wrapped, other.wrapped));
 		} catch(ArithmeticException e) {
 			throw new EvaluationException(e);
 		}
 	}
 	
 	public SNumber negate() throws EvaluationException {
-		return new SNumber(this.internal.negate(MathContext.DECIMAL64));
+		return of(Numbers.negate(this.wrapped));
 	}
-	
+
+	// TODO fix this
 	public String toScheme() {
-		return internal.toString();
+		return Numbers.displayValue(wrapped);
 	}
-	
+
 	public SNumber quotient(SNumber other) throws EvaluationException {
-		return SNumber.of(internal.divideToIntegralValue(other.internal));
+		return SNumber.of(Numbers.quotient(wrapped, other.wrapped));
 	}
-	
+
 	public SNumber remainder(SNumber other) throws EvaluationException {
-		return SNumber.of(internal.divideAndRemainder(other.internal)[1]);
+		return SNumber.of(Numbers.remainder(wrapped, other.wrapped));
 	}
-	
+
 	public SNumber modulo(SNumber other) throws EvaluationException {
-		SNumber res = remainder(other);
-		if (other.compareTo(SNumber.ZERO) < 0){
-			if (res.compareTo(SNumber.ZERO) <= 0){
-				return res;
-			} else {
-				return res.add(other);
-			}
-		} else {
-			if (res.compareTo(SNumber.ZERO) >= 0){
-				return res;
-			} else {
-				return res.add(other);
-			}
-		}
+		return SNumber.of(Numbers.modulo(wrapped, other.wrapped));
 	}
 
 	public static SNumber parse(String data, int base) throws EvaluationException {
 		if(base != 10) {
 			throw EvaluationException.format("unsupported base %d", base);
 		}
-		
+
+		try {
+			return of(new BigInteger(data));
+		} catch (NumberFormatException e) {
+			// Might not be an integer.
+		}
+
 		try {
 			return of(new BigDecimal(data));
-		} catch(NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			throw new EvaluationException(e);
 		}
 	}
 	
 	@Override
 	public int compareTo(SNumber o) {
-		return internal.compareTo(o.internal);
+		return Numbers.compareTo(this.wrapped, o.wrapped);
 	}
 	
 	@Override
@@ -195,5 +150,29 @@ public class SNumber extends SValue implements Comparable<SNumber> {
 	@Override
 	public SNumber getNumber() {
 		return this;
+	}
+
+	public BigInteger toBigInteger() {
+		try {
+			return Numbers.integerValue(wrapped).toBigInteger();
+		} catch (InexactException e) {
+			throw new EvaluationException(e);
+		}
+	}
+
+	public int toInteger() {
+		return toBigInteger().intValue();
+	}
+
+	public long toLong() {
+		return toBigInteger().longValue();
+	}
+
+	public BigDecimal toBigDecimal() {
+		return Numbers.realValue(wrapped).toBigDecimal();
+	}
+
+	public double toDouble() {
+		return toBigDecimal().doubleValue();
 	}
 }

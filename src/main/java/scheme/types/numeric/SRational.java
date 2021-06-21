@@ -22,7 +22,7 @@ package scheme.types.numeric;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class SRational implements Field<SRational>, SRealPromotable, SIntegerDemotable, Number<SRational> {
+public class SRational implements Field<SRational>, SRealPromotable, Number<SRational> {
 
 	private final SInteger numerator;
 	private final SInteger denominator;
@@ -95,12 +95,22 @@ public class SRational implements Field<SRational>, SRealPromotable, SIntegerDem
 	}
 
 	@Override
-	public SInteger toSIntegerExact() throws InexactException {
+	public SInteger integerValueExact() throws InexactException {
 		if (denominator.equals(SInteger.ONE)) {
 			return numerator;
 		}
 
 		throw new InexactException("can't convert to an integer");
+	}
+
+	@Override
+	public Number<?>[] divideToIntegralValue(SRational divisor) {
+		var result = divide(divisor);
+		var quotRem = result.numerator.divideToIntegralValue(result.denominator);
+		return new Number[]{
+				quotRem[0],
+				of(quotRem[1], result.denominator)
+		};
 	}
 
 	@Override
@@ -165,5 +175,15 @@ public class SRational implements Field<SRational>, SRealPromotable, SIntegerDem
 		var rhsNumerator = other.numerator.multiply(lcm);
 
 		return lhsNumerator.compareTo(rhsNumerator);
+	}
+
+	@Override
+	public String displayValue() {
+		return String.format("%s/%s", numerator.displayValue(), denominator.displayValue());
+	}
+
+	@Override
+	public boolean isExact() {
+		return numerator.isExact() && denominator.isExact();
 	}
 }

@@ -20,7 +20,7 @@ public class BuiltinsTest {
 
     @Test
     public void correctNumberOfBuiltins() {
-        assertEquals(118, getAnnotatedMethods().size());
+        assertEquals(117, getAnnotatedMethods().size());
     }
 
     @Test

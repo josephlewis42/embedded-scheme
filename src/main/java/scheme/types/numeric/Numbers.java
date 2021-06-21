@@ -19,6 +19,7 @@
 
 package scheme.types.numeric;
 
+import scheme.EvaluationException;
 import java.util.Arrays;
 import java.lang.Class;
 import java.util.function.BiFunction;
@@ -46,10 +47,10 @@ public class Numbers {
         };
     }
 
-    private static Function<Number, Number> unaryDispatch(
-            Function<SInteger, Number> intImpl,
-            Function<SRational, Number> rationalImpl,
-            Function<SReal, Number> realImpl) {
+    private static <R> Function<Number, R> unaryDispatch(
+            Function<SInteger, R> intImpl,
+            Function<SRational, R> rationalImpl,
+            Function<SReal, R> realImpl) {
         return (a) -> {
             if (convertibleTo(SInteger.class, a)) {
                 return intImpl.apply(convert(SInteger.class, a));
@@ -117,7 +118,6 @@ public class Numbers {
         return DIVIDE_DISPATCH.apply(a,b);
     }
 
-
     private static final Function<Number, Number> RECIPROCAL_DISPATCH = unaryDispatch(
             SInteger::reciprocal,
             SRational::reciprocal,
@@ -138,6 +138,73 @@ public class Numbers {
         return COMPARE_DISPATCH.apply(a, b);
     }
 
+    private static final BiFunction<Number, Number, Number[]> DIVIDE_TO_INTEGRAL_VALUE_DISPATCH = binaryDispatcher(
+            SInteger::divideToIntegralValue,
+            SRational::divideToIntegralValue,
+            SReal::divideToIntegralValue
+    );
+
+    public static final Number[] divideToIntegralValue(Number dividend, Number divisor) {
+        return DIVIDE_TO_INTEGRAL_VALUE_DISPATCH.apply(dividend, divisor);
+    }
+
+    public static final Number quotient(Number dividend, Number divisor) {
+        return divideToIntegralValue(dividend, divisor)[0];
+    }
+
+    public static final Number remainder(Number dividend, Number divisor) {
+        return divideToIntegralValue(dividend, divisor)[1];
+    }
+
+    public static final Number modulo(Number dividend, Number divisor) throws EvaluationException {
+        var res = remainder(dividend, divisor);
+        if (divisor.signum() < 0){
+            if (compareTo(res, SInteger.ZERO) <= 0){
+                return res;
+            } else {
+                return add(res, divisor);
+            }
+        } else {
+            if (res.signum() >= 0){
+                return res;
+            } else {
+                return add(res, divisor);
+            }
+        }
+    }
+
+    private static final Function<Number, String> DISPLAY_VALUE_DISPATCH = unaryDispatch(
+            SInteger::displayValue,
+            SRational::displayValue,
+            SReal::displayValue
+    );
+
+    public static final String displayValue(Number a) {
+        return DISPLAY_VALUE_DISPATCH.apply(a);
+    }
+
+    private static final Function<Number, Boolean> EXACT_DISPATCH = unaryDispatch(
+            SInteger::isExact,
+            SRational::isExact,
+            SReal::isExact
+    );
+
+    public static final boolean isExact(Number a) {
+        return EXACT_DISPATCH.apply(a);
+    }
+
+    public static SInteger integerValue(Number a) throws InexactException {
+        return a.integerValueExact();
+    }
+
+    public static SReal realValue(Number a) {
+        return convert(SReal.class, a);
+    }
+
+    public static SRational rationalValue(Number a) {
+        return convert(SRational.class, a);
+    }
+
     private static final <T> boolean convertibleTo(Class<T> clazz, Number...nums) {
         return Arrays.stream(nums).allMatch(num ->
                 (num.getClass().isAssignableFrom(clazz)) ||
@@ -150,14 +217,14 @@ public class Numbers {
             return (T)num;
         }
 
-        if (clazz == SRational.class && num instanceof SRationalPromotable) {
+        if (clazz == SRational.class && SRationalPromotable.class.isAssignableFrom(num.getClass())) {
             return (T)((SRationalPromotable) num).toSRational();
         }
 
-        if (clazz == SReal.class && num instanceof SRealPromotable) {
+        if (clazz == SReal.class && SRealPromotable.class.isAssignableFrom(num.getClass())) {
             return (T)((SRealPromotable) num).toSReal();
         }
 
-        throw new AssertionError(String.format("can't convert %s to %s", num.getClass(), clazz));
+        throw new ArithmeticException(String.format("can't convert %s to %s", num.getClass(), clazz));
     }
 }

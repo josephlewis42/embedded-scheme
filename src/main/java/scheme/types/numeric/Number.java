@@ -19,8 +19,40 @@
 
 package scheme.types.numeric;
 
+import scheme.types.SNumber;
+
 public interface Number<T> extends Comparable<T> {
 
     /** Returns -1, 0, 1 respectively if the number is negative, zero, or positive. */
     int signum();
+
+    /**
+     * Divides this value by other and returns the integer part of the quotient (this / divisor)
+     * rounded down followed by the remainder.
+     *
+     * <p>The remainder will ALWAYS have the same sign as the dividend.
+     *
+     * @return The integer part of this / divisor followed by the remainder.
+     * @throws ArithmeticException if the divisor is zero.
+     */
+    Number<?>[] divideToIntegralValue(T divisor);
+
+    /**  Converts the number into a human-readable format. */
+    String displayValue();
+
+    /** Converts to an {@link SInteger} or throws {@link InexactException} if the conversion is not exact.*/
+    SInteger integerValueExact() throws InexactException;
+
+    /** Tests whether {@link ::integerValueExact} will throw an exception. */
+    default boolean isInteger() {
+        try {
+            integerValueExact();
+            return true;
+        } catch(InexactException e) {
+            return false;
+        }
+    }
+
+    /** Returns whether the number is exact. */
+    boolean isExact();
 }

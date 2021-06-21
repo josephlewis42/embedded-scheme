@@ -19,7 +19,7 @@
 
 package scheme.types.numeric;
 
-public class InexactException extends MathException {
+public class InexactException extends ArithmeticException{
     InexactException(Class desiredType, Object actual) {
         super(String.format("can't convert %s to %s exactly", actual.getClass(), desiredType));
     }

@@ -20,12 +20,10 @@
 package scheme.types.numeric;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Objects;
 
-public class SReal implements Number<SReal>, Field<SReal>, SIntegerDemotable {
-
-	public static final SReal ZERO = of(BigDecimal.ZERO);
-	public static final SReal ONE = of(BigDecimal.ONE);
+public class SReal implements Number<SReal>, Field<SReal> {
 
 	private final BigDecimal value;
 
@@ -42,10 +40,7 @@ public class SReal implements Number<SReal>, Field<SReal>, SIntegerDemotable {
 	}
 
 	public static SReal of(final SRational rational) {
-		var num = new BigDecimal(rational.getNumerator().toBigInteger());
-		var den = new BigDecimal(rational.getDenominator().toBigInteger());
-
-		return of(num.divide(den));
+		return of(rational.getNumerator()).divide(rational.getDenominator());
 	}
 
 	public BigDecimal toBigDecimal() {
@@ -74,7 +69,7 @@ public class SReal implements Number<SReal>, Field<SReal>, SIntegerDemotable {
 	}
 
 	public SReal divide(SReal other) {
-		return of(value.divide(other.value));
+		return of(value.divide(other.value, MathContext.DECIMAL128));
 	}
 
 	public SReal negate() {
@@ -103,7 +98,7 @@ public class SReal implements Number<SReal>, Field<SReal>, SIntegerDemotable {
 
 
 	@Override
-	public SInteger toSIntegerExact() throws InexactException {
+	public SInteger integerValueExact() throws InexactException {
 		try {
 			return SInteger.of(value.toBigIntegerExact());
 		}catch(ArithmeticException e) {
@@ -118,5 +113,30 @@ public class SReal implements Number<SReal>, Field<SReal>, SIntegerDemotable {
 
 	public int signum() {
 		return value.signum();
+	}
+
+	@Override
+	public boolean isInteger() {
+		// https://stackoverflow.com/a/12748321
+		return value.stripTrailingZeros().scale() <= 0;
+	}
+
+	@Override
+	public SReal[] divideToIntegralValue(SReal divisor) {
+		var quotRem = value.divideAndRemainder(divisor.value);
+		return new SReal[]{
+				of(quotRem[0]),
+				of(quotRem[1])
+		};
+	}
+
+	@Override
+	public String displayValue() {
+		return value.toString();
+	}
+
+	@Override
+	public boolean isExact() {
+		return false;
 	}
 }

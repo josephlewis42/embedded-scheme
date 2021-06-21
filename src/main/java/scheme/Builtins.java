@@ -429,7 +429,7 @@ public class Builtins {
 	@ExampleCall(in="(even? 1)", out="#f")
 	@ExampleCall(in="(even? 2)", out="#t")
 	public static boolean isEven(SNumber num) throws EvaluationException {
-		return num.toLong() % 2 == 0;
+		return num.modulo(SNumber.of(2)).compareTo(SNumber.ZERO) == 0;
 	}
 
 	@Procedure(name = "odd?")
@@ -438,7 +438,7 @@ public class Builtins {
 	@ExampleCall(in="(odd? 1)", out="#t")
 	@ExampleCall(in="(odd? 2)", out="#f")
 	public static boolean isOdd(SNumber num) throws EvaluationException {
-		return num.toLong() % 2 != 0;
+		return num.modulo(SNumber.of(2)).compareTo(SNumber.ZERO) != 0;
 	}
 
 	@Procedure(name = "integer?")
@@ -490,13 +490,6 @@ public class Builtins {
 	@ExampleCall(in="(inexact? 1.1)", out="#t")
 	public static boolean isInxact(SNumber num) {
 		return !isExact(num);
-	}
-
-	@Procedure(name = "sqrt")
-	@ExampleCall(in="(sqrt 4)", out="2")
-	//@ExampleCall(in="(sqrt -1)", out="1i")
-	public static SNumber sqrt(SNumber num) throws EvaluationException {
-		return num.sqrt();
 	}
 
 	@Procedure(name = "quotient")
@@ -554,35 +547,6 @@ public class Builtins {
 		// TODO add radix support
 		return new SString(num.toString());
 	}
-
-//	library procedure:  (gcd n1 ...)
-//	library procedure:  (lcm n1 ...)
-//	These procedures return the greatest common divisor or least common multiple of their arguments. The result is always non-negative.
-//
-//	(gcd 32 -36)                    ===>  4
-//	(gcd)                           ===>  0
-//	(lcm 32 -36)                    ===>  288
-//	(lcm 32.0 -36)                  ===>  288.0  ; inexact
-//	(lcm)                           ===>  1
-//
-//	procedure:  (numerator q)
-//	procedure:  (denominator q)
-//	These procedures return the numerator or denominator of their argument; the result is computed as if the argument was represented as a fraction in lowest terms. The denominator is always positive. The denominator of 0 is defined to be 1.
-//
-//	(numerator (/ 6 4))          ===>  3
-//	(denominator (/ 6 4))          ===>  2
-//	(denominator
-//	  (exact->inexact (/ 6 4)))         ===> 2.0
-//
-//	procedure:  (floor x)
-//	procedure:  (ceiling x)
-//	procedure:  (truncate x)
-//	procedure:  (round x)
-//
-//	These procedures return integers. Floor returns the largest integer not larger than x. Ceiling returns the smallest integer not smaller than x. Truncate returns the integer closest to x whose absolute value is not larger than the absolute value of x. Round returns the closest integer to x, rounding to even when x is halfway between two integers.
-//
-//			Rationale:   Round rounds to even for consistency with the default rounding mode specified by the IEEE floating point standard.
-//			Note:   If the argument to one of these procedures is inexact, then the result will also be inexact. If an exact value is needed, the result should be passed to the inexact->exact procedure.
 
 	///////////////////////////////////////////////////////
 	// Boolean procedures

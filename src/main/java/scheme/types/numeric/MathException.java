@@ -24,4 +24,8 @@ public class MathException extends Exception {
     public MathException(String message) {
         super(message);
     }
+
+    public MathException(Throwable cause) {
+        super(cause);
+    }
 }
